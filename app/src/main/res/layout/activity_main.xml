@@ -12,7 +12,13 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         app:intervalCount="5"
-        app:overlayCircleRadius="5"/>
+        app:netColor="@color/defNetColor"
+        app:overlayAlpha="100"
+        app:overlayCircleColor="@color/defOverlayCircleColor"
+        app:overlayCircleRadius="5"
+        app:overlayColor="@color/defOverlayColor"
+        app:textColor="@color/defTextColor"
+        app:textSize="36"/>
 
 
 </LinearLayout>
