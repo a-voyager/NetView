@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="netView">
+
+        <!--网格颜色-->
+        <attr name="netColor" format="color"/>
+
+        <!--覆盖区颜色-->
+        <attr name="overlayColor" format="color"/>
+
+        <!--覆盖区透明度-->
+        <attr name="overlayAlpha" format="integer"/>
+
+        <!--文本颜色-->
+        <attr name="textColor" format="color"/>
+
+        <!--文本字体大小-->
+        <attr name="textSize" format="integer"/>
+
+    </declare-styleable>
+
+</resources>

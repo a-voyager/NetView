@@ -1,4 +1,4 @@
-package top.wuhaojie.netview;
+package top.wuhaojie.view;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

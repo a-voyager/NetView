@@ -1,4 +1,4 @@
-package top.wuhaojie.netview;
+package top.wuhaojie.view;
 
 import org.junit.Test;
 
