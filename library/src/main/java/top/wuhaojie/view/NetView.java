@@ -54,10 +54,66 @@ public class NetView extends View {
      * 单位角度值
      */
     private float mAngle;
+
+    /**
+     * 网格线画笔
+     */
     private Paint mNetPaint;
+
+    /**
+     * 覆盖区画笔
+     */
     private Paint mOverlayPaint;
+
+    /**
+     * 文字画笔
+     */
     private Paint mTextPaint;
+
+    /**
+     * 覆盖区圆圈画笔
+     */
     private Paint mOverlayCirclePaint;
+
+    /**
+     * 全局路径
+     */
+    private Path mPath;
+
+    /**
+     * 标签文本字体大小
+     */
+    private int mTextSize;
+
+    /**
+     * 覆盖区透明度
+     */
+    private int mOverlayAlpha;
+
+    /**
+     * 覆盖区圆圈颜色
+     */
+    private int mCircleColor;
+
+    /**
+     * 标签文本字体颜色
+     */
+    private int mTextColor;
+
+    /**
+     * 覆盖区颜色
+     */
+    private int mOverlayColor;
+
+    /**
+     * 网格线颜色
+     */
+    private int mNetColor;
+
+    /**
+     * 覆盖区圆圈半径
+     */
+    private int mOverlayCircleRadius = 5;
 
     {
         mList.add(new Pair<>("A", 0.1f));
@@ -82,39 +138,43 @@ public class NetView extends View {
         // 获取属性数组
         TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.netView, defStyleAttr, 0);
 
-        int netColor = attributes.getColor(R.styleable.netView_netColor, ContextCompat.getColor(context, R.color.defNetColor));
-        int overlayColor = attributes.getColor(R.styleable.netView_overlayColor, ContextCompat.getColor(context, R.color.defOverlayColor));
-        int textColor = attributes.getColor(R.styleable.netView_textColor, ContextCompat.getColor(context, R.color.defTextColor));
-        int circleColor = attributes.getColor(R.styleable.netView_overlayCircleColor, ContextCompat.getColor(context, R.color.defOverlayCircleColor));
+        mNetColor = attributes.getColor(R.styleable.netView_netColor, ContextCompat.getColor(context, R.color.defNetColor));
+        mOverlayColor = attributes.getColor(R.styleable.netView_overlayColor, ContextCompat.getColor(context, R.color.defOverlayColor));
+        mTextColor = attributes.getColor(R.styleable.netView_textColor, ContextCompat.getColor(context, R.color.defTextColor));
+        mCircleColor = attributes.getColor(R.styleable.netView_overlayCircleColor, ContextCompat.getColor(context, R.color.defOverlayCircleColor));
 
-        int overlayAlpha = attributes.getInteger(R.styleable.netView_overlayAlpha, 100);
-        int textSize = attributes.getInteger(R.styleable.netView_textSize, 24);
-        mNetCount = attributes.getInteger(R.styleable.netView_intervalCount, 5) + 1;
+        mOverlayAlpha = attributes.getInteger(R.styleable.netView_overlayAlpha, 100);
+        mTextSize = attributes.getInteger(R.styleable.netView_textSize, 24);
+        mNetCount = attributes.getInteger(R.styleable.netView_intervalCount, mNetCount) + 1;
+        mOverlayCircleRadius = attributes.getInteger(R.styleable.netView_overlayCircleRadius, mOverlayCircleRadius);
 
         // 回收数组
         attributes.recycle();
 
         // 网格画笔
         mNetPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mNetPaint.setColor(netColor);
+        mNetPaint.setColor(mNetColor);
         mNetPaint.setStyle(Paint.Style.STROKE);
 
         // 覆盖区画笔
         mOverlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mOverlayPaint.setColor(overlayColor);
-        mOverlayPaint.setAlpha(overlayAlpha);
+        mOverlayPaint.setColor(mOverlayColor);
+        mOverlayPaint.setAlpha(mOverlayAlpha);
         mOverlayPaint.setStyle(Paint.Style.FILL);
 
         // 覆盖区圆圈画笔
         mOverlayCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mOverlayCirclePaint.setColor(circleColor);
+        mOverlayCirclePaint.setColor(mCircleColor);
         mOverlayCirclePaint.setStyle(Paint.Style.FILL);
 
         // 文本画笔
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setColor(textColor);
-        mTextPaint.setTextSize(textSize);
+        mTextPaint.setColor(mTextColor);
+        mTextPaint.setTextSize(mTextSize);
         mTextPaint.setStyle(Paint.Style.STROKE);
+
+        // 初始化路径
+        mPath = new Path();
 
     }
 
@@ -130,11 +190,6 @@ public class NetView extends View {
         mCenterX = w / 2;
         mCenterY = h / 2;
 
-        // 标签个数
-        mTagCount = mList.size();
-
-        // 单位角度
-        mAngle = (float) (2 * Math.PI / mTagCount);
 
         // 刷新界面
         postInvalidate();
@@ -144,7 +199,11 @@ public class NetView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Path path = new Path();
+        // 标签个数
+        mTagCount = mList.size();
+
+        // 单位角度
+        mAngle = (float) (2 * Math.PI / mTagCount);
 
         // 绘制网格
         // 每次递增的高度
@@ -155,33 +214,33 @@ public class NetView extends View {
 
         for (int i = 0; i < mNetCount; i++) {
             currRadius = intervalHeight * i;
-            path.reset();
+            mPath.reset();
 
             for (int j = 0; j < mTagCount; j++) {
                 if (j == 0) {
-                    path.moveTo(mCenterX + currRadius, mCenterY);
+                    mPath.moveTo(mCenterX + currRadius, mCenterY);
                 } else {
                     float x = (float) (mCenterX + currRadius * Math.cos(mAngle * j));
                     float y = (float) (mCenterY + currRadius * Math.sin(mAngle * j));
-                    path.lineTo(x, y);
+                    mPath.lineTo(x, y);
                 }
             }
 
             // 闭合路径并绘制
-            path.close();
-            canvas.drawPath(path, mNetPaint);
+            mPath.close();
+            canvas.drawPath(mPath, mNetPaint);
 
         }
 
 
         // 绘制轴线
         for (int i = 1; i < mTagCount + 1; i++) {
-            path.reset();
-            path.moveTo(mCenterX, mCenterY);
+            mPath.reset();
+            mPath.moveTo(mCenterX, mCenterY);
             float x = (float) (mCenterX + mRadius * Math.cos(mAngle * i));
             float y = (float) (mCenterY + mRadius * Math.sin(mAngle * i));
-            path.lineTo(x, y);
-            canvas.drawPath(path, mNetPaint);
+            mPath.lineTo(x, y);
+            canvas.drawPath(mPath, mNetPaint);
         }
 
 
@@ -213,7 +272,7 @@ public class NetView extends View {
 
 
         // 绘制覆盖区
-        path.reset();
+        mPath.reset();
         for (int i = 0; i < mTagCount; i++) {
             // 属性值
             float value = mList.get(i).second;
@@ -222,18 +281,150 @@ public class NetView extends View {
             float y = (float) (mCenterY + mRadius * Math.sin(mAngle * i) * value);
 
             if (i == 0) {
-                path.moveTo(x, mCenterY);
+                mPath.moveTo(x, mCenterY);
             } else {
-                path.lineTo(x, y);
+                mPath.lineTo(x, y);
             }
 
             // 绘制覆盖区圆圈
-            canvas.drawCircle(x, y, 5, mOverlayCirclePaint);
+            canvas.drawCircle(x, y, mOverlayCircleRadius, mOverlayCirclePaint);
 
         }
-        path.close();
-        canvas.drawPath(path, mOverlayPaint);
+        mPath.close();
+        canvas.drawPath(mPath, mOverlayPaint);
 
 
+    }
+
+
+    /**
+     * 添加标签数据
+     *
+     * @param tag   标签字符串
+     * @param value 标签权重(0.0 ~ 1.0)
+     * @return 操作是否成功
+     */
+    public boolean addData(String tag, float value) {
+        mList.add(new Pair<>(tag, value));
+        postInvalidate();
+        return true;
+    }
+
+    /**
+     * 添加标签数据
+     *
+     * @param tag   标签字符串
+     * @param value 标签权重(0 ~ 100)
+     * @return 操作是否成功
+     */
+    public boolean addData(String tag, int value) {
+        return addData(tag, value / 100);
+    }
+
+    /**
+     * 添加标签数据
+     *
+     * @param tag      标签字符串
+     * @param value    标签价值
+     * @param maxValue 最大价值
+     * @return 操作是否成功
+     */
+    public boolean addData(String tag, int value, int maxValue) {
+        return addData(tag, value / maxValue);
+    }
+
+    /**
+     * 移除标签数据
+     *
+     * @param index 索引
+     * @return 操作是否成功
+     */
+    public boolean removeData(int index) {
+        mList.remove(index);
+        return true;
+    }
+
+    /**
+     * @return 内网数量
+     */
+    public int getNetCount() {
+        return mNetCount;
+    }
+
+    /**
+     * 设置内网数量
+     *
+     * @param netCount 内网数目
+     */
+    public void setNetCount(int netCount) {
+        mNetCount = netCount;
+    }
+
+    /**
+     * @return 标签数量
+     */
+    public int getTagCount() {
+        return mTagCount;
+    }
+
+    public int getTextSize() {
+        return mTextSize;
+    }
+
+    public void setTextSize(int textSize) {
+        mTextSize = textSize;
+    }
+
+    public int getOverlayAlpha() {
+        return mOverlayAlpha;
+    }
+
+    /**
+     * 设置覆盖区透明度
+     *
+     * @param overlayAlpha 透明度(0 ~ 255)
+     */
+    public void setOverlayAlpha(int overlayAlpha) {
+        mOverlayAlpha = overlayAlpha;
+    }
+
+    public int getCircleColor() {
+        return mCircleColor;
+    }
+
+    public void setCircleColor(int circleColor) {
+        mCircleColor = circleColor;
+    }
+
+    public int getTextColor() {
+        return mTextColor;
+    }
+
+    public void setTextColor(int textColor) {
+        mTextColor = textColor;
+    }
+
+    public int getOverlayColor() {
+        return mOverlayColor;
+    }
+
+    public void setOverlayColor(int overlayColor) {
+        mOverlayColor = overlayColor;
+    }
+
+    public int getNetColor() {
+        return mNetColor;
+    }
+
+    public void setNetColor(int netColor) {
+        mNetColor = netColor;
+    }
+
+    public int getOverlayCircleRadius() {
+        return mOverlayCircleRadius;
+    }
+
+    public void setOverlayCircleRadius(int overlayCircleRadius) {
+        mOverlayCircleRadius = overlayCircleRadius;
     }
 }

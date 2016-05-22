@@ -12,6 +12,9 @@
         <!--覆盖区圆圈颜色-->
         <attr name="overlayCircleColor" format="color"/>
 
+        <!--覆盖区圆圈半径-->
+        <attr name="overlayCircleRadius" format="integer"/>
+
         <!--覆盖区透明度-->
         <attr name="overlayAlpha" format="integer"/>
 

@@ -9,6 +9,7 @@
     <top.wuhaojie.view.NetView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:intervalCount="4"/>
+        app:intervalCount="4"
+        app:overlayCircleRadius="5"/>
 
 </LinearLayout>
