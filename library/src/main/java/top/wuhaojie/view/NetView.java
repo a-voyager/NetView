@@ -20,7 +20,11 @@ import top.wuhaojie.netview.R;
  */
 public class NetView extends View {
 
+    /**
+     * 默认视图大小
+     */
     private static final int DEF_VIEW_SIZE_DIP = 240;
+
     /**
      * 数据键值对列表
      */
@@ -121,6 +125,8 @@ public class NetView extends View {
      */
     private Context mContext;
 
+    /* 调试使用
+
     {
         mList.add(new Pair<>("A", 0.8f));
         mList.add(new Pair<>("B", 0.5f));
@@ -129,6 +135,8 @@ public class NetView extends View {
         mList.add(new Pair<>("E", 0.7f));
         mList.add(new Pair<>("F", 0.6f));
     }
+
+    */
 
     public NetView(Context context) {
         this(context, null, 0);
@@ -225,6 +233,12 @@ public class NetView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if (mList.size() <= 0) {
+            String text = "请添加数据后在真机上查看效果!";
+            canvas.drawText(text, mCenterX - mTextPaint.measureText(text) / 2, mCenterY, mTextPaint);
+            return;
+        }
 
         // 标签个数
         mTagCount = mList.size();
@@ -332,9 +346,12 @@ public class NetView extends View {
      * @return 操作是否成功
      */
     public boolean addData(String tag, float value) {
-        mList.add(new Pair<>(tag, value));
-        postInvalidate();
-        return true;
+        if (mList != null) {
+            mList.add(new Pair<>(tag, value));
+            postInvalidate();
+            return true;
+        }
+        return false;
     }
 
     /**
