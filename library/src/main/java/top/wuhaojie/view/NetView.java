@@ -20,6 +20,7 @@ import top.wuhaojie.netview.R;
  */
 public class NetView extends View {
 
+    private static final int DEF_VIEW_SIZE_DIP = 240;
     /**
      * 数据键值对列表
      */
@@ -115,13 +116,18 @@ public class NetView extends View {
      */
     private int mOverlayCircleRadius = 5;
 
+    /**
+     * 上下文
+     */
+    private Context mContext;
+
     {
-        mList.add(new Pair<>("A", 0.1f));
-        mList.add(new Pair<>("B", 0.7f));
-        mList.add(new Pair<>("C", 0.4f));
-        mList.add(new Pair<>("D", 0.9f));
-        mList.add(new Pair<>("E", 0.3f));
-        mList.add(new Pair<>("F", 0.4f));
+        mList.add(new Pair<>("A", 0.8f));
+        mList.add(new Pair<>("B", 0.5f));
+        mList.add(new Pair<>("C", 0.6f));
+        mList.add(new Pair<>("D", 0.6f));
+        mList.add(new Pair<>("E", 0.7f));
+        mList.add(new Pair<>("F", 0.6f));
     }
 
     public NetView(Context context) {
@@ -134,6 +140,9 @@ public class NetView extends View {
 
     public NetView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        // 初始化上下文
+        mContext = context;
 
         // 获取属性数组
         TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.netView, defStyleAttr, 0);
@@ -193,6 +202,24 @@ public class NetView extends View {
 
         // 刷新界面
         postInvalidate();
+    }
+
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int viewSizePX = dip2px(mContext, DEF_VIEW_SIZE_DIP);
+        int wmode = MeasureSpec.getMode(widthMeasureSpec);
+        int wsize = MeasureSpec.getSize(widthMeasureSpec);
+        int hmode = MeasureSpec.getMode(heightMeasureSpec);
+        int hsize = MeasureSpec.getSize(heightMeasureSpec);
+        if (wmode == MeasureSpec.AT_MOST && hmode == MeasureSpec.AT_MOST) {
+            setMeasuredDimension(viewSizePX, viewSizePX);
+        } else if (widthMeasureSpec == MeasureSpec.AT_MOST) {
+            setMeasuredDimension(viewSizePX, hsize);
+        } else if (heightMeasureSpec == MeasureSpec.AT_MOST) {
+            setMeasuredDimension(wsize, viewSizePX);
+        }
     }
 
     @Override
@@ -427,4 +454,21 @@ public class NetView extends View {
     public void setOverlayCircleRadius(int overlayCircleRadius) {
         mOverlayCircleRadius = overlayCircleRadius;
     }
+
+    /**
+     * 根据手机的分辨率从 dip 的单位 转成为 px(像素)
+     */
+    private static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    /**
+     * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
+     */
+    private static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
+
 }
