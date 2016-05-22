@@ -18,6 +18,9 @@
         <!--文本字体大小-->
         <attr name="textSize" format="integer"/>
 
+        <!--内网数量-->
+        <attr name="intervalCount" format="integer"/>
+
     </declare-styleable>
 
 </resources>
