@@ -3,4 +3,5 @@
     <color name="defNetColor">#2196f3</color>
     <color name="defOverlayColor">#e040fb</color>
     <color name="defTextColor">#304ffe</color>
+    <color name="defOverlayCircleColor">#e040fb</color>
 </resources>
